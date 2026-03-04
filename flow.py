@@ -80,6 +80,14 @@ def handle_message(session, message):
 
     state = session['state']
 
+    if state == "START":
+        session["state"] = "ASK_NAME"
+        return """
+    👋 Bienvenido a BIFF
+
+    Para comenzar, ¿cuál es tu nombre?
+    """
+
     # -----pedir nombre-----
     if state == 'ASK_NAME':
 

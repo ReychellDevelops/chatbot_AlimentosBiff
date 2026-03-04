@@ -17,6 +17,14 @@ def webhook():
             "cart": [],
             "phone": phone
         }
+        return Response("""<?xml version="1.0" encoding="UTF-8"?>
+    <Response>
+        <Message>
+    👋 Bienvenido a BIFF
+
+    Para comenzar, ¿cuál es tu nombre?
+        </Message>
+    </Response>""", mimetype="text/xml")
 
     reply = handle_message(sessions[phone], message)
 
