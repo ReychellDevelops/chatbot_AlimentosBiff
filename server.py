@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, Response
 from flow import handle_message
 
 app = Flask(__name__)
@@ -7,7 +7,6 @@ sessions = {}
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-
     phone = request.form.get("From")
     message = request.form.get("Body")
 
@@ -19,11 +18,9 @@ def webhook():
 
     reply = handle_message(sessions[phone], message)
 
-    return f"""
+    twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
     <Message>{reply}</Message>
-</Response>
-"""
-    
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+</Response>"""
+
+    return Response(twiml, mimetype="text/xml")
