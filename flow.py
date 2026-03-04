@@ -82,11 +82,10 @@ def handle_message(session, message):
 
     if state == "START":
         session["state"] = "ASK_NAME"
-        return """
-    👋 Bienvenido a BIFF
-
-    Para comenzar, ¿cuál es tu nombre?
-    """
+        return (
+            "👋 *Bienvenido a BIFF*\n\n"
+            "Para comenzar, ¿cuál es tu nombre?"
+        )
 
     # -----pedir nombre-----
     if state == 'ASK_NAME':
@@ -99,13 +98,12 @@ def handle_message(session, message):
         session['name'] = name
         session['state'] = 'ASK_SEDE'
 
-        return """
-    Selecciona tu sede:
-
-    1️⃣ Duitama (Minorista)
-    2️⃣ Sogamoso (Minorista y bodega)
-    3️⃣ Bogotá (Bodega mayorista)
-    """
+        return (
+        "Selecciona tu sede:\n\n"
+        "1️⃣ Duitama (Minorista)\n"
+        "2️⃣ Sogamoso (Minorista y bodega)\n"
+        "3️⃣ Bogotá (Bodega mayorista)"
+        )
     
     elif state == "ASK_SEDE":
 
@@ -121,9 +119,10 @@ def handle_message(session, message):
         session["sede"] = sedes[message]
         session["state"] = "MENU"
 
-        return f"""
-        Sede seleccionada: {session['sede']}
-        """ + main_menu(session["name"], session["sede"])
+        return (
+        f"✅ Sede seleccionada: *{session['sede']}*\n\n"
+        + main_menu(session["name"], session["sede"])
+        )
     
     # ---- MENÚ PRINCIPAL ----
     elif state == "MENU":
@@ -134,15 +133,12 @@ def handle_message(session, message):
             if not ofertas:
                 return "📢 No hay ofertas activas en este momento.\n\n" + main_menu(session["name"], session["sede"])
 
-            text = f"""
-            🔥 OFERTAS DISPONIBLES 🔥
-            📍 Sede: {session["sede"]}
-
-            ⚠️ Las ofertas aplican hasta agotar existencias.
-            La compra de ofertas se realiza directamente en el punto físico.
-            Aplican términos y condiciones.
-
-            """
+            text = (
+            "🔥 *OFERTAS DISPONIBLES* 🔥\n"
+            f"📍 Sede: {session['sede']}\n\n"
+            "⚠️ Hasta agotar existencias.\n"
+            "Compra directamente en punto físico.\n\n"
+            )
 
             for i, o in enumerate(ofertas, 1):
                 text += (
@@ -153,7 +149,7 @@ def handle_message(session, message):
                     f"   Descripción de la oferta: ${o['descripcion']}\n\n"
                 )
 
-            text += "0️⃣ Volver al menú"
+            text += "\n0️⃣ Volver al menú"
 
             session["state"] = "OFFERS_VIEW"
 
@@ -271,12 +267,11 @@ def handle_message(session, message):
         # Si es res o cerdo → pedir origen
         session["state"] = "ORDER_ORIGIN"
 
-        return """
-    Selecciona origen:
-
-        1️⃣ Nacional
-        2️⃣ Importada
-        """
+        return (
+        "Selecciona origen:\n\n"
+        "1️⃣ Nacional\n"
+        "2️⃣ Importada"
+        )
     
     # ----------categoria del catalogo-----------
     elif state == "CATALOG_CATEGORY":
@@ -406,12 +401,11 @@ def handle_message(session, message):
             product["peso_min_kg"] + product["peso_max_kg"]
         ) / 2
 
-        return f"""
-            ¿Cuántas {product['tipo_unidad']}(s) de {product['nombre']} deseas?
-
-            Peso aproximado por {product['tipo_unidad']}: {peso_promedio:.2f} kg
-            Precio: ${product['precio_kg']:,.0f}/kg
-            """
+        return (
+            f"¿Cuántas {product['tipo_unidad']}(s) de *{product['nombre']}* deseas?\n\n"
+            f"Peso aprox por {product['tipo_unidad']}: {peso_promedio:.2f} kg\n"
+            f"Precio: ${product['precio_kg']:,.0f}/kg"
+        )
 
 
     # ------- validar cantidad mínima ------------
@@ -476,7 +470,7 @@ def handle_message(session, message):
 
         elif message == "2":
 
-            cart_text = "🛒 Tu pedido:\n\n"
+            cart_text = "🛒 *Tu pedido:*\n\n"
             total_precio = 0
             total_peso = 0
 
@@ -497,7 +491,7 @@ def handle_message(session, message):
                 "1️⃣ Agregar otro producto\n"
                 "2️⃣ Ver carrito\n"
                 "3️⃣ Confirmar pedido\n"
-                "4️⃣ Cancelar pedido\n"
+                "4️⃣ Cancelar pedido"
             )
 
             return cart_text
@@ -522,48 +516,39 @@ def handle_message(session, message):
 
             # 🔹 Mensaje logístico según tipo
             if tipo_cliente == "minorista":
-                mensaje_logistica = f"""
-                    🛍 Pedido minorista
-
-                    📍 Tu pedido debe recogerse en la sede {session["sede"]}.
-                    ✨ Gracias por confiar en nosotros.
-                    Un asesor revisará tu pedido y se comunicará contigo.
-                    """
+                mensaje_logistica = (
+                    "🛍 *Pedido minorista*\n\n"
+                    f"📍 Recoger en sede: {session['sede']}\n\n"
+                    "Un asesor confirmará disponibilidad.\n"
+                    "Gracias por confiar en BIFF 🤝"
+                )
             else:
-                mensaje_logistica = f"""
-                    📦 Pedido mayorista
-
-                    📍 Pedido realizado desde: {session['sede']}
-
-                    Un asesor humano gestionará:
-                    ✔ Confirmación de inventario
-                    ✔ Condiciones comerciales
-                    ✔ Entrega o despacho
-
-                    ✨ Gracias por confiar en nosotros.
-                    Te contactaremos pronto 🤝
-                    """
+                mensaje_logistica = (
+                    "📦 *Pedido mayorista*\n\n"
+                    f"📍 Pedido realizado desde: {session['sede']}\n\n"
+                    "Un asesor gestionará:\n"
+                    "✔ Confirmación de inventario\n"
+                    "✔ Condiciones comerciales\n"
+                    "✔ Entrega o despacho\n\n"
+                    "Gracias por confiar en BIFF 🤝"
+                )
 
             session["cart"] = []
             session["state"] = "MENU"
 
-            return f"""
-            📦 PEDIDO REGISTRADO
-
-            🧾 Orden: {order_id}
-            👤 Cliente: {session["name"]}
-            📱 Teléfono: {session["phone"]}
-            🏷 Tipo: {tipo_cliente}
-            🏢 Sede: {session["sede"]}
-
-            ⚖️ Peso total estimado: {total_peso:.2f} kg
-            💰 Total estimado: ${total_precio:,.0f}
-
-            ⚠️ El valor final puede variar según peso exacto al despacho.
-
-            {mensaje_logistica}
-
-            """ + main_menu(session["name"], session["sede"])
+            return (
+                "📦 *PEDIDO REGISTRADO*\n\n"
+                f"🧾 Orden: {order_id}\n"
+                f"👤 Cliente: {session['name']}\n"
+                f"📱 Teléfono: {session['phone']}\n"
+                f"🏷 Tipo: {tipo_cliente}\n"
+                f"🏢 Sede: {session['sede']}\n\n"
+                f"⚖️ Peso total estimado: {total_peso:.2f} kg\n"
+                f"💰 Total estimado: ${total_precio:,.0f}\n\n"
+                "⚠️ El valor final puede variar según peso exacto al despacho.\n\n"
+                f"{mensaje_logistica}\n\n"
+                + main_menu(session["name"], session["sede"])
+            )
 
         elif message == "4":
             session["cart"] = []
