@@ -6,7 +6,6 @@ app = Flask(__name__)
 sessions = {}
 
 @app.route("/webhook", methods=["POST"])
-@app.route("/webhook", methods=["POST"])
 def webhook():
 
     phone = request.form.get("From")

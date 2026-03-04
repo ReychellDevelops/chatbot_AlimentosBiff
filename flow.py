@@ -351,8 +351,9 @@ def handle_message(session, message):
     """
 
         elif message == "0":
+            # Fallback de seguridad
             session["state"] = "MENU"
-            return main_menu(session["name"], session["sede"])
+            return "Ocurrió un error en el flujo. Volviendo al menú.\n\n" + main_menu(session["name"], session["sede"])
 
         else:
             return "Selecciona una opción válida."
