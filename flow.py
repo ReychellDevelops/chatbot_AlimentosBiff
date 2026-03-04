@@ -258,7 +258,7 @@ def handle_message(session, message):
             session["filtered_products"] = products
             session["state"] = "ORDER_PRODUCT"
 
-            build_product_list(products, session["sede"])
+            return build_product_list(products, session["sede"])
 
         # Si es res o cerdo → pedir origen
         session["state"] = "ORDER_ORIGIN"
