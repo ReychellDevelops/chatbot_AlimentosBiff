@@ -1,6 +1,7 @@
 # en este archivo se realiza la conexion con la api de sheets para realizar cambios (como agregar ordenes y detalle de ordenes)
 
 import os
+import json
 from dotenv import load_dotenv
 import gspread
 from google.oauth2.service_account import Credentials
@@ -12,7 +13,6 @@ load_dotenv()
 # almacenamos lo que nos trae .env
 CATALOG_SHEET_ID = os.getenv("CATALOG_SHEET_ID") 
 ORDERS_SHEET_ID = os.getenv("ORDERS_SHEET_ID")
-CREDENTIALS_FILE = os.getenv("GOOGLE_CREDENTIALS")
 
 ORDERS_SHEET = "ordenes" # hoja del sheet donde se registran las ordenes
 DETAIL_SHEET = "detalle_orden" # hoja 2 del sheet en donde se registra el detalle de las ordenes
@@ -25,7 +25,8 @@ SCOPES = [
 
 # ---------------- CONEXION BASE ----------------
 def get_client():
-    creds = Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=SCOPES)
+    creds_dict = json.loads(os.getenv("GOOGLE_CREDENTIALS"))
+    creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
     return gspread.authorize(creds)
 
 # ---------------- CATALOGO (obtener referencias de carnes registradas en el sheet) ----------------
