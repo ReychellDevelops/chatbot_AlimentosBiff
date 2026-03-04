@@ -13,8 +13,8 @@ def webhook():
 
     # 🔒 Validación de seguridad
     if not phone or not message:
-    return Response("""<?xml version="1.0" encoding="UTF-8"?>
-<Response></Response>""", mimetype="text/xml")
+        return Response("""<?xml version="1.0" encoding="UTF-8"?>
+    <Response></Response>""", mimetype="text/xml")
 
     if phone not in sessions:
         sessions[phone] = {
