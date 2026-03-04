@@ -7,6 +7,8 @@ sessions = {}
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
+    print("PHONE:", phone)
+    print("MESSAGE:", message)
     return Response("""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
 <Message>Bot activo correctamente ✅</Message>
