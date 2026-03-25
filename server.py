@@ -4,6 +4,7 @@ from flask import Flask, request, Response
 from flow import handle_message
 from twilio.twiml.messaging_response import MessagingResponse
 import traceback
+import os
 
 app = Flask(__name__)
 
@@ -112,5 +113,12 @@ def webhook():
         resp.message("⚠️ *Ocurrió un error inesperado.* Por favor, intenta de nuevo más tarde.")
         return Response(str(resp), mimetype="application/xml")
 
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    # Obtener el puerto de la variable de entorno PORT (Render la asigna)
+    # Si no existe, usar 5000 para desarrollo local
+    port = int(os.environ.get("PORT", 5000))
+    
+    # En producción con gunicorn, no se ejecuta este bloque
+    # pero lo dejamos para pruebas locales
+    app.run(host="0.0.0.0", port=port, debug=True)
