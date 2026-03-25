@@ -10,6 +10,11 @@ app = Flask(__name__)
 
 sessions = {}
 
+@app.route("/", methods=["GET"])
+def health_check():
+    """Endpoint de verificación de salud para Render"""
+    return "OK - Bot funcionando", 200
+
 @app.route("/webhook", methods=["POST"])
 def webhook():
     try:
