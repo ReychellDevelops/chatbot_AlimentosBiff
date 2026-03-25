@@ -1,40 +1,48 @@
-from session_manager import get_session
 from flow import handle_message
-from responses import ask_name
+from flask import Flask, request
+from twilio.twiml.messaging_response import MessagingResponse
 
-print("Chat iniciado (escribe 0 para terminar)\n")
+app = Flask(__name__)
 
-phone = None
-session = None
-waiting_phone = True
+# simulamos sesiones (luego lo mejoras)
+sessions = {}
 
-while True:
-    user = input("Tú: ").strip()
+@app.route("/webhook", methods=["POST"])
+def whatsapp_webhook():
 
-    # Primera interacción: pedir teléfono
-    if waiting_phone:
-        print("Bot: 👋 Bienvenido a Alimentos Biff.")
-        print("Bot: Por favor ingresa tu número de teléfono:")
+    incoming_msg = request.values.get("Body", "").strip()
+    phone = request.values.get("From", "")
 
-        phone_input = input("Número: ").strip()
+    if phone not in sessions:
+        sessions[phone] = {}
 
-        if not phone_input.isdigit() or len(phone_input) < 10:
-            print("Bot: ❌ Número inválido. Debe tener al menos 10 dígitos y solo números.\n")
-            continue
+    session = sessions[phone]
 
-        phone = phone_input
-        session = get_session(phone)
+    # 🔥 AQUÍ USAS TU CEREBRO
+    response = handle_message(session, incoming_msg)
 
-        print("Bot:", ask_name())
+    resp = MessagingResponse()
 
-        waiting_phone = False
-        continue
+    # manejar distintos tipos
+    if isinstance(response, dict):
 
-    # Flujo normal después de validar teléfono
-    reply = handle_message(session, user)
+        if response["type"] == "list":
+            # Twilio sandbox no soporta listas reales → fallback a texto
+            text = response["body"] + "\n\n"
+            for row in response["rows"]:
+                text += f"- {row['title']}\n"
+            resp.message(text)
 
-    if reply == "EXIT":
-        print("Bot: Gracias por escribir a Alimentos Biff 🥩 ¡Hasta pronto!")
-        break
+        elif response["type"] == "buttons":
+            text = response["body"] + "\n\n"
+            for btn in response["buttons"]:
+                text += f"- {btn['title']}\n"
+            resp.message(text)
 
-    print("Bot:", reply)
+    else:
+        resp.message(response)
+
+    return str(resp)
+
+if __name__ == "__main__":
+    app.run(port=5000, debug=True)

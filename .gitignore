@@ -1,4 +1,8 @@
-.env
-credentials.json
+# .gitignore
 venv/
 __pycache__/
+.env
+*.pyc
+.DS_Store
+ngrok.exe
+credentials.json

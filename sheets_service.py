@@ -25,9 +25,23 @@ SCOPES = [
 
 # ---------------- CONEXION BASE ----------------
 def get_client():
-    creds_dict = json.loads(os.getenv("GOOGLE_CREDENTIALS"))
-    creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
-    return gspread.authorize(creds)
+    creds_raw = os.getenv("GOOGLE_CREDENTIALS")
+
+    if not creds_raw:
+        raise Exception("❌ GOOGLE_CREDENTIALS no está configurado")
+
+    try:
+        creds_dict = json.loads(creds_raw)
+    except Exception as e:
+        raise Exception(f"❌ Error parseando credenciales: {e}")
+
+    creds = Credentials.from_service_account_info(
+        creds_dict,
+        scopes=SCOPES
+    )
+    client = gspread.authorize(creds)
+
+    return client
 
 # ---------------- CATALOGO (obtener referencias de carnes registradas en el sheet) ----------------
 def get_products():

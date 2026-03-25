@@ -1,49 +1,41 @@
 from sheets_service import get_products
 
-#almacena en un array las categorias que trae al recorrer la columna 'categoria' del sheet 'Catalogo_Biff'
+def normalize(text):
+    return str(text).strip().lower()
+
+# ---------------- CATEGORIAS ----------------
 def get_categories():
     products = get_products()
 
     categories = []
     for p in products:
-        cat = p["categoria"].lower()
+        cat = normalize(p["categoria"])
         if cat not in categories:
             categories.append(cat)
 
     return categories
 
-def get_products_by_category_and_origin(category, origin_prefix):
-    products = get_products()
-
-    return [
-        p for p in products
-        if p["categoria"].strip() == category
-        and p["origen"].strip().startswith(origin_prefix)
-    ]
-
+# ---------------- FILTROS ----------------
 def get_products_by_category_origin_and_sede(category, origin_prefix, sede):
-
     products = get_products()
 
     return [
         p for p in products
-        if p["categoria"] == category
-        and p["origen"].startswith(origin_prefix)
-        and (p["sede"] == sede or p["sede"] == "Todas")
+        if normalize(p["categoria"]) == normalize(category)
+        and normalize(p["origen"]).startswith(normalize(origin_prefix))
+        and (normalize(p["sede"]) == normalize(sede) or normalize(p["sede"]) == "todas")
     ]
 
-# obtiene especificamente los prductos de la categoria que recibe
 def get_products_by_category_and_sede(category, sede):
-
     products = get_products()
 
     return [
         p for p in products
-        if p["categoria"] == category
-        and (p["sede"] == sede or p["sede"] == "Todas")
+        if normalize(p["categoria"]) == normalize(category)
+        and (normalize(p["sede"]) == normalize(sede) or normalize(p["sede"]) == "todas")
     ]
 
-
+# ---------------- PRODUCTO POR ID ----------------
 def get_product_by_id(product_id):
     products = get_products()
     
